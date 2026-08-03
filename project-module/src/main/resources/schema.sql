@@ -15,6 +15,7 @@ CREATE TABLE markers (
     marker_id SERIAL PRIMARY KEY,
     marker_name VARCHAR(100) NOT NULL UNIQUE,
     unit VARCHAR(30) NOT NULL,
+    description VARCHAR(1000) NOT NULL,
     normal_min DECIMAL(10,2) NOT NULL,
     normal_max DECIMAL(10,2) NOT NULL
 );
@@ -51,6 +52,8 @@ CREATE TABLE report_results (
         REFERENCES markers(marker_id),
 
     result_value DECIMAL(10,2) NOT NULL,
+
+    status VARCHAR (20) NOT NULL,
 
     UNIQUE (report_id, marker_id)
 );
