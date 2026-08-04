@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -16,11 +17,13 @@ import java.util.stream.Collectors;
 public class ReportService {
 
     private final ReportRepository reportRepository;
+    private final ResultEvaluator resultEvaluator;
     private final TestTypeService testTypeService;
 
-    public ReportService(ReportRepository reportRepository, TestTypeService testTypeService) {
+    public ReportService(ReportRepository reportRepository, TestTypeService testTypeService, ResultEvaluator resultEvaluator) {
         this.reportRepository = reportRepository;
         this.testTypeService = testTypeService;
+        this.resultEvaluator = resultEvaluator;
     }
 
     @Transactional
@@ -44,9 +47,10 @@ public class ReportService {
 
             BigDecimal value = markerValues.get(marker.getId());
             ReportResult result = new ReportResult();
+            ResultStatus status = resultEvaluator.evaluate(marker,value);
             result.setMarker(marker);
             result.setValue(value);
-
+            result.setStatus(status);
             // Adds result to report AND sets result.report
             report.addResult(result);
         }
@@ -64,7 +68,6 @@ public class ReportService {
             );
         }
 
-
         Set<Integer> requiredMarkerIds =
                 testType.getMarkers()
                         .stream()
@@ -74,9 +77,7 @@ public class ReportService {
 
         Set<Integer> submittedMarkerIds = markerValues.keySet();
 
-
         if (!requiredMarkerIds.equals(submittedMarkerIds)) {
-
             throw new IllegalArgumentException(
                     "Submitted markers do not match " +
                             "the markers required for test type "
