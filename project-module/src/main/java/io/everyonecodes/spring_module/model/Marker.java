@@ -27,17 +27,29 @@ public class Marker {
     @Column(name = "marker_name", nullable = false, unique = true)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "unit")
     private String unit;
 
-    @Column(name = "normal_min", nullable = false)
+    @Column(name = "normal_min")
     private BigDecimal normalMin;
 
-    @Column(name = "normal_max", nullable = false)
+    @Column(name = "normal_max")
     private BigDecimal normalMax;
 
-    @Column(name = "description", nullable = false)
+    @Column(
+            name = "description",
+            columnDefinition = "TEXT",
+            nullable = false
+    )
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "result_type", nullable = false, length = 20)
+    private ResultType resultType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "normal_qualitative_result", length = 30)
+    private QualitativeResult normalQualitativeResult;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "markers")

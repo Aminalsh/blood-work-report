@@ -38,8 +38,13 @@ public class ReportResult {
     @JoinColumn(name = "marker_id", nullable = false)
     private Marker marker;
 
-    @Column(name = "result_value", nullable = false)
-    private BigDecimal value;
+
+    @Column(name = "result_value")
+    private BigDecimal numericValue;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "qualitative_value", length = 30)
+    private QualitativeResult qualitativeValue;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
