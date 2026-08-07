@@ -40,6 +40,13 @@ public class Report {
     )
     private List<ReportResult> results = new ArrayList<>();
 
+    @Column(
+            name = "interpretation",
+            columnDefinition = "TEXT",
+            nullable = false
+    )
+    private String interpretation;
+
     public void addResult(ReportResult result) {
         results.add(result);
         result.setReport(this);

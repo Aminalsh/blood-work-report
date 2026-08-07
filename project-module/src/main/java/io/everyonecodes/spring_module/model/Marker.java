@@ -43,6 +43,7 @@ public class Marker {
     )
     private String description;
 
+
     @Enumerated(EnumType.STRING)
     @Column(name = "result_type", nullable = false, length = 20)
     private ResultType resultType;
@@ -50,6 +51,12 @@ public class Marker {
     @Enumerated(EnumType.STRING)
     @Column(name = "normal_qualitative_result", length = 30)
     private QualitativeResult normalQualitativeResult;
+
+    @Column(
+            name = "possible_influences",
+            columnDefinition = "TEXT"
+    )
+    private String possibleInfluences;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "markers")
