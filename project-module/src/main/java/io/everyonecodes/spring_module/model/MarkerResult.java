@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReportResult {
+public class MarkerResult {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,9 +44,9 @@ public class ReportResult {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "qualitative_value", length = 30)
-    private QualitativeResult qualitativeValue;
+    private QualitativeValue qualitativeValue;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
-    private ResultStatus status;
+    private MarkerResultStatus status;
 }

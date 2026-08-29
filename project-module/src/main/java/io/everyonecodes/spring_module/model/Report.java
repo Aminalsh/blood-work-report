@@ -38,7 +38,7 @@ public class Report {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<ReportResult> results = new ArrayList<>();
+    private List<MarkerResult> results = new ArrayList<>();
 
     @Column(
             name = "interpretation",
@@ -47,7 +47,7 @@ public class Report {
     )
     private String interpretation;
 
-    public void addResult(ReportResult result) {
+    public void addResult(MarkerResult result) {
         results.add(result);
         result.setReport(this);
     }

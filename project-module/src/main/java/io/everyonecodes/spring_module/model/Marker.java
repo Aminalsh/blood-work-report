@@ -46,11 +46,11 @@ public class Marker {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "result_type", nullable = false, length = 20)
-    private ResultType resultType;
+    private MarkerValueType resultType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "normal_qualitative_result", length = 30)
-    private QualitativeResult normalQualitativeResult;
+    private QualitativeValue normalQualitativeResult;
 
     @Column(
             name = "possible_influences",

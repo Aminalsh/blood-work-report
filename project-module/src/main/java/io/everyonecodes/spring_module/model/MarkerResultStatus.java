@@ -1,6 +1,6 @@
 package io.everyonecodes.spring_module.model;
 
-public enum ResultStatus {
+public enum MarkerResultStatus {
     LOW,
     NORMAL,
     HIGH,

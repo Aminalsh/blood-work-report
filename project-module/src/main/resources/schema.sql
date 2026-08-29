@@ -28,14 +28,29 @@ CREATE TABLE markers (
 
                          normal_qualitative_result VARCHAR(30),
 
-                         possible_influences TEXT
+                         possible_influences TEXT,
 
-                         CONSTRAINT valid_normal_range
-                             CHECK (
-                                 normal_min IS NULL
-                                     OR normal_max IS NULL
-                                     OR normal_min <= normal_max
+                             CONSTRAINT valid_marker_configuration CHECK (
+                                 (
+                                     result_type = 'QUALITATIVE'
+                                         AND normal_min IS NULL
+                                         AND normal_max IS NULL
+                                     )
+                                     OR
+                                 (
+                                     result_type IN ('NUMERIC', 'MIXED')
+                                         AND (
+                                         normal_min IS NOT NULL
+                                             OR normal_max IS NOT NULL
+                                         )
+                                         AND (
+                                         normal_min IS NULL
+                                             OR normal_max IS NULL
+                                             OR normal_min <= normal_max
+                                         )
+                                     )
                                  )
+
 );
 
 
@@ -229,11 +244,11 @@ VALUES
     ),
     (
         'Urine Protein',
-        NULL,
-        NULL,
-        NULL,
+        'mg/dl',
+        0,
+        15,
         'Detects protein in urine. Persistent protein in urine may indicate kidney damage.',
-        'QUALITATIVE',
+        'MIXED',
         'NEGATIVE',
         'Hydration status, fever, strenuous exercise, prolonged standing, pregnancy and temporary illness may influence urine protein. Concentrated or strongly alkaline urine, blood, urinary infection, semen or vaginal contamination, prolonged dipstick immersion, phenazopyridine, disinfectants and iodinated contrast may produce misleading dipstick results.'
     ),
@@ -289,21 +304,21 @@ VALUES
     ),
     (
         'Urine Glucose',
-        NULL,
-        NULL,
-        NULL,
+        'mg/dl',
+        0,
+        30,
         'Detects glucose in urine. Glucose should normally be absent.',
-        'QUALITATIVE',
+        'MIXED',
         'NEGATIVE',
         'Blood glucose level, pregnancy and the individual renal threshold for glucose may influence urine glucose. SGLT2-inhibitor medicines intentionally increase glucose excretion in urine. Vitamin C, high urine pH, high specific gravity and uric acid may reduce dipstick sensitivity. Bacteria and delayed testing can consume glucose and produce a falsely low or negative result.'
     ),
     (
         'Urine Ketones',
-        NULL,
-        NULL,
-        NULL,
+        'mg/dl',
+        0,
+        5,
         'Detects ketones in urine. Ketones should normally be absent.',
-        'QUALITATIVE',
+        'MIXED',
         'NEGATIVE',
         'Fasting, low-carbohydrate or ketogenic diets, prolonged exercise, vomiting, fever, pregnancy, alcohol use and poorly controlled diabetes may influence urine ketones. SGLT2-inhibitor medicines may also be relevant. High specific gravity, low urine pH, some medicine metabolites and delayed testing may alter the result. Some dipsticks do not detect every type of ketone equally.'
     )
@@ -352,3 +367,168 @@ WHERE tt.test_name = 'Kidney Function Test'
     )
 ON CONFLICT (test_type_id, marker_id)
     DO NOTHING;
+INSERT INTO test_types (test_name, description, category)
+VALUES (
+           'Liver Function Test',
+           'Evaluates liver-cell injury, bile-flow markers, bilirubin and hepatic protein/clotting synthesis.',
+           'Liver'
+       )
+ON CONFLICT (test_name) DO UPDATE
+    SET description = EXCLUDED.description,
+        category = EXCLUDED.category;
+
+
+-- -------------------------------------------------------------
+-- 2. Create or update all markers required by
+--    LiverReportInterpreter.REQUIRED_MARKERS
+-- -------------------------------------------------------------
+INSERT INTO markers (
+    marker_name,
+    unit,
+    normal_min,
+    normal_max,
+    description,
+    possible_influences,
+    result_type
+)
+VALUES
+    (
+        'ALT (GPT)',
+        'U/L',
+        10.00,
+        45.00,
+        'Alanine aminotransferase is an enzyme found mainly in liver cells. An increased activity supports a hepatocellular-injury pattern but does not identify the cause.',
+        'Higher values may occur with metabolic fatty liver disease, viral or autoimmune hepatitis, alcohol-related or medication/supplement-related injury, reduced liver blood flow, or strenuous exercise. Hemolysis and sample handling can affect the result. Low values are usually not a sign of liver injury.',
+        'NUMERIC'
+    ),
+    (
+        'AST (GOT)',
+        'U/L',
+        10.00,
+        35.00,
+        'Aspartate aminotransferase occurs in liver cells but also in skeletal muscle, heart and blood cells. It is interpreted together with ALT.',
+        'Higher values may reflect liver injury, strenuous exercise, skeletal-muscle injury, heart injury, hemolysis, intramuscular injections, alcohol exposure, or medicines/supplements. A hemolyzed sample can falsely increase AST. Low values are generally not clinically important for liver injury.',
+        'NUMERIC'
+    ),
+    (
+        'Alkaline Phosphatase (ALP)',
+        'U/L',
+        30.00,
+        129.00,
+        'Alkaline phosphatase is produced mainly by bile-duct and bone tissue. A high result is interpreted with GGT to help assess whether the source is hepatobiliary.',
+        'Higher values may occur with impaired bile flow, bile-duct disease, bone growth or bone turnover, healing fractures, pregnancy, or medicines. Lower values may occur with poor nutrition, zinc or magnesium deficiency, hypothyroidism, severe illness, or the rare disorder hypophosphatasia.',
+        'NUMERIC'
+    ),
+    (
+        'Gamma-GT (GGT)',
+        'U/L',
+        12.00,
+        55.00,
+        'Gamma-glutamyl transferase is a sensitive but nonspecific liver and bile-duct enzyme. When ALP is also elevated, GGT supports a hepatobiliary source of the ALP elevation.',
+        'Higher values may occur with impaired bile flow, chronic alcohol exposure, smoking, obesity or metabolic fatty liver disease, and enzyme-inducing medicines or supplements. Hemolysis can produce a falsely lower measured activity. A low value is usually not clinically important.',
+        'NUMERIC'
+    ),
+    (
+        'Total Bilirubin',
+        'mg/dL',
+        0.00,
+        1.00,
+        'Total bilirubin combines conjugated and unconjugated bilirubin. An elevated total result should be fractionated into direct and indirect bilirubin to clarify the biochemical pattern.',
+        'Higher values may occur with increased red-cell breakdown, Gilbert syndrome, fasting or intercurrent illness, liver-cell injury, impaired bile flow, or medicines. Light exposure can lower bilirubin in the sample, and hemolysis may interfere with measurement. Low values are generally not clinically important.',
+        'NUMERIC'
+    ),
+    (
+        'Albumin',
+        'g/dL',
+        3.40,
+        4.80,
+        'Albumin is a protein made by the liver. Because it changes slowly and has several non-liver influences, it is interpreted with INR and cholinesterase rather than alone.',
+        'Lower values may occur with reduced hepatic synthesis, inflammation, kidney or gastrointestinal protein loss, malnutrition, pregnancy, fluid overload, or severe illness. Higher values usually reflect dehydration or prolonged venous stasis during blood collection.',
+        'NUMERIC'
+    ),
+    (
+        'INR',
+        NULL,
+        0.85,
+        1.15,
+        'The international normalized ratio standardizes prothrombin time and reflects clotting-factor activity. In a person not taking anticoagulants, an increased INR can support reduced hepatic clotting-factor synthesis.',
+        'Higher values may occur with vitamin K antagonist treatment such as warfarin, vitamin K deficiency or malabsorption, cholestasis, reduced liver clotting-factor synthesis, inherited or acquired factor deficiency, disseminated coagulation disorders, or specimen problems. Interpretation requires the medication history and testing indication.',
+        'NUMERIC'
+    ),
+    (
+        'Cholinesterase (CHE)',
+        'U/L',
+        5400.00,
+        13200.00,
+        'Serum cholinesterase is produced mainly by the liver. A reduced activity can support impaired hepatic synthesis when albumin or INR is abnormal in the same direction.',
+        'Lower values may occur with reduced liver synthesis, inherited butyrylcholinesterase variants, organophosphate exposure or cholinesterase-inhibiting medicines, malnutrition or malabsorption, pregnancy, inflammation, or severe illness. Higher values have limited liver-specific meaning and may occur with diabetes, hypothyroidism, obesity, hyperlipidemia, or kidney protein loss.',
+        'NUMERIC'
+    )
+ON CONFLICT (marker_name) DO UPDATE
+    SET unit = EXCLUDED.unit,
+        normal_min = EXCLUDED.normal_min,
+        normal_max = EXCLUDED.normal_max,
+        description = EXCLUDED.description,
+        possible_influences = EXCLUDED.possible_influences,
+        result_type = EXCLUDED.result_type;
+
+
+-- -------------------------------------------------------------
+-- 3. Connect the eight markers to Liver Function Test
+-- -------------------------------------------------------------
+INSERT INTO test_type_markers (test_type_id, marker_id)
+SELECT test_type.test_type_id, marker.marker_id
+FROM test_types AS test_type
+         CROSS JOIN markers AS marker
+WHERE test_type.test_name = 'Liver Function Test'
+  AND marker.marker_name IN (
+                             'ALT (GPT)',
+                             'AST (GOT)',
+                             'Alkaline Phosphatase (ALP)',
+                             'Gamma-GT (GGT)',
+                             'Total Bilirubin',
+                             'Albumin',
+                             'INR',
+                             'Cholinesterase (CHE)'
+    )
+ON CONFLICT (test_type_id, marker_id) DO NOTHING;
+
+
+-- -------------------------------------------------------------
+-- OPTIONAL: use this block INSTEAD when the database is intended
+-- exclusively for an adult female reference profile.
+-- Do not run it for male reports.
+-- -------------------------------------------------------------
+-- UPDATE markers
+-- SET normal_min = 10.00, normal_max = 34.00
+-- WHERE marker_name = 'ALT (GPT)';
+--
+-- UPDATE markers
+-- SET normal_min = 10.00, normal_max = 31.00
+-- WHERE marker_name = 'AST (GOT)';
+--
+-- UPDATE markers
+-- SET normal_min = 30.00, normal_max = 104.00
+-- WHERE marker_name = 'Alkaline Phosphatase (ALP)';
+--
+-- UPDATE markers
+-- SET normal_min = 9.00, normal_max = 38.00
+-- WHERE marker_name = 'Gamma-GT (GGT)';
+
+
+-- -------------------------------------------------------------
+-- 4. Verification: this query must return exactly eight rows.
+-- -------------------------------------------------------------
+SELECT
+    marker.marker_name,
+    marker.unit,
+    marker.normal_min,
+    marker.normal_max,
+    marker.result_type
+FROM test_types AS test_type
+         JOIN test_type_markers AS connection
+              ON connection.test_type_id = test_type.test_type_id
+         JOIN markers AS marker
+              ON marker.marker_id = connection.marker_id
+WHERE test_type.test_name = 'Liver Function Test'
+ORDER BY marker.marker_name;

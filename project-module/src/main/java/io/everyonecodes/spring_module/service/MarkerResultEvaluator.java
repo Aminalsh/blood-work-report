@@ -1,15 +1,15 @@
 package io.everyonecodes.spring_module.service;
 
 import io.everyonecodes.spring_module.model.Marker;
-import io.everyonecodes.spring_module.model.QualitativeResult;
-import io.everyonecodes.spring_module.model.ResultStatus;
+import io.everyonecodes.spring_module.model.QualitativeValue;
+import io.everyonecodes.spring_module.model.MarkerResultStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
 @Service
-public class ResultEvaluator {
+public class MarkerResultEvaluator {
 
     private static final Set<String> MAX_ONLY_MARKERS = Set.of(
             "LDL Cholesterol",
@@ -26,10 +26,10 @@ public class ResultEvaluator {
     );
 
 
-    public ResultStatus evaluate(
+    public MarkerResultStatus evaluate(
             Marker marker,
             BigDecimal numericValue,
-            QualitativeResult qualitativeValue
+            QualitativeValue qualitativeValue
     ) {
 
         if (marker == null) {
@@ -66,7 +66,7 @@ public class ResultEvaluator {
     }
 
 
-    private ResultStatus evaluateNumeric(
+    private MarkerResultStatus evaluateNumeric(
             Marker marker,
             BigDecimal value
     ) {
@@ -96,7 +96,7 @@ public class ResultEvaluator {
     }
 
 
-    private ResultStatus evaluateStandardRange(
+    private MarkerResultStatus evaluateStandardRange(
             Marker marker,
             BigDecimal value
     ) {
@@ -111,18 +111,18 @@ public class ResultEvaluator {
         }
 
         if (value.compareTo(marker.getNormalMin()) < 0) {
-            return ResultStatus.LOW;
+            return MarkerResultStatus.LOW;
         }
 
         if (value.compareTo(marker.getNormalMax()) > 0) {
-            return ResultStatus.HIGH;
+            return MarkerResultStatus.HIGH;
         }
 
-        return ResultStatus.NORMAL;
+        return MarkerResultStatus.NORMAL;
     }
 
 
-    private ResultStatus evaluateMinimum(
+    private MarkerResultStatus evaluateMinimum(
             Marker marker,
             BigDecimal value
     ) {
@@ -135,14 +135,14 @@ public class ResultEvaluator {
         }
 
         if (value.compareTo(marker.getNormalMin()) < 0) {
-            return ResultStatus.LOW;
+            return MarkerResultStatus.LOW;
         }
 
-        return ResultStatus.NORMAL;
+        return MarkerResultStatus.NORMAL;
     }
 
 
-    private ResultStatus evaluateMaximum(
+    private MarkerResultStatus evaluateMaximum(
             Marker marker,
             BigDecimal value
     ) {
@@ -155,14 +155,14 @@ public class ResultEvaluator {
         }
 
         if (value.compareTo(marker.getNormalMax()) > 0) {
-            return ResultStatus.HIGH;
+            return MarkerResultStatus.HIGH;
         }
 
-        return ResultStatus.NORMAL;
+        return MarkerResultStatus.NORMAL;
     }
 
 
-    private ResultStatus evaluateHbA1c(
+    private MarkerResultStatus evaluateHbA1c(
             BigDecimal value
     ) {
 
@@ -170,16 +170,16 @@ public class ResultEvaluator {
                 new BigDecimal("5.7");
 
         if (value.compareTo(normalLimit) < 0) {
-            return ResultStatus.NORMAL;
+            return MarkerResultStatus.NORMAL;
         }
 
-        return ResultStatus.HIGH;
+        return MarkerResultStatus.HIGH;
     }
 
 
-    private ResultStatus evaluateQualitative(
+    private MarkerResultStatus evaluateQualitative(
             Marker marker,
-            QualitativeResult value
+            QualitativeValue value
     ) {
 
         if (value == null) {
@@ -197,17 +197,17 @@ public class ResultEvaluator {
         }
 
         if (value == marker.getNormalQualitativeResult()) {
-            return ResultStatus.NORMAL;
+            return MarkerResultStatus.NORMAL;
         }
 
-        return ResultStatus.ABNORMAL;
+        return MarkerResultStatus.ABNORMAL;
     }
 
 
-    private ResultStatus evaluateMixed(
+    private MarkerResultStatus evaluateMixed(
             Marker marker,
             BigDecimal numericValue,
-            QualitativeResult qualitativeValue
+            QualitativeValue qualitativeValue
     ) {
 
         boolean hasNumericValue =
