@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Report Details</title>
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/style.css}"
+    >
+</head>
+
+<body>
+
+<header>
+    <h1>Report Details</h1>
+
+    <a th:href="@{/reports}">
+        Back to all reports
+    </a>
+</header>
+
+<main>
+
+    <section class="report">
+
+        <h2 th:text="${report.testType.name}">
+            Test type
+        </h2>
+
+        <p>
+            Report code:
+            <strong th:text="${report.code}">
+                REPORT-123
+            </strong>
+        </p>
+
+        <p>
+            Date:
+            <span th:text="${report.date}">
+                2026-08-18
+            </span>
+        </p>
+
+        <h3>Marker results</h3>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Marker</th>
+                <th>Value</th>
+                <th>Unit</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="result : ${report.results}">
+
+                <td th:text="${result.marker.name}">
+                    Marker
+                </td>
+
+                <td>
+                    <span
+                            th:if="${result.numericValue != null}"
+                            th:text="${result.numericValue}"
+                    >
+                    </span>
+
+                    <span
+                            th:if="${result.qualitativeValue != null}"
+                            th:text="${result.qualitativeValue}"
+                    >
+                    </span>
+                </td>
+
+                <td th:text="${result.marker.unit != null
+                        ? result.marker.unit
+                        : '-'}">
+                    Unit
+                </td>
+
+                <td
+                        th:text="${result.status}"
+                        th:classappend="${'status-'
+                            + #strings.toLowerCase(
+                                result.status.name()
+                            )}"
+                >
+                    Status
+                </td>
+
+            </tr>
+            </tbody>
+        </table>
+
+        <h3>Interpretation</h3>
+
+        <div
+                class="interpretation"
+                th:text="${report.interpretation}"
+        >
+            Interpretation
+        </div>
+
+        <p>
+            <a
+                    th:href="@{/reports/{reportId}/edit(reportId=${report.id})}"
+            >
+                Edit this report
+            </a>
+        </p>
+
+    </section>
+
+</main>
+
+</body>
+</html>

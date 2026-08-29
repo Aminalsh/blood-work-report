@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Report</title>
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/style.css}"
+    >
+</head>
+
+<body>
+
+<h1>Edit Report</h1>
+
+<p>
+    Report code:
+    <strong th:text="${report.code}">
+        REPORT-123
+    </strong>
+</p>
+
+<p>
+    Test type:
+    <span th:text="${report.testType.name}">
+        Test type
+    </span>
+</p>
+
+<form
+        th:action="@{/reports/{reportId}/edit(reportId=${report.id})}"
+        th:object="${form}"
+        method="post"
+>
+
+    <div
+            class="marker-row"
+            th:each="result, row : ${report.results}"
+    >
+        <input
+                type="hidden"
+                th:field="*{results[__${row.index}__].markerId}"
+        >
+
+        <label th:text="${result.marker.name}">
+            Marker
+        </label>
+
+        <input
+                th:if="${result.marker.resultType.name() == 'NUMERIC'}"
+                type="number"
+                step="any"
+                required
+                th:field="*{results[__${row.index}__].value}"
+        >
+
+        <select
+                th:if="${result.marker.resultType.name() == 'QUALITATIVE'}"
+                required
+                th:field="*{results[__${row.index}__].value}"
+        >
+            <option value="">Select a value</option>
+            <option value="NEGATIVE">Negative</option>
+            <option value="POSITIVE">Positive</option>
+            <option value="TRACE">Trace</option>
+        </select>
+
+        <input
+                th:if="${result.marker.resultType.name() == 'MIXED'}"
+                type="text"
+                required
+                placeholder="Negative, positive, trace, or number"
+                th:field="*{results[__${row.index}__].value}"
+                th:list="|mixed-values-${result.marker.id}|"
+        >
+
+        <datalist
+                th:if="${result.marker.resultType.name() == 'MIXED'}"
+                th:id="|mixed-values-${result.marker.id}|"
+        >
+            <option value="NEGATIVE"></option>
+            <option value="POSITIVE"></option>
+            <option value="TRACE"></option>
+        </datalist>
+
+        <span
+                th:if="${result.marker.unit != null}"
+                th:text="${result.marker.unit}"
+        >
+            Unit
+        </span>
+    </div>
+
+    <button type="submit">
+        Save changes
+    </button>
+
+    <a
+            th:href="@{/reports/{reportId}(reportId=${report.id})}"
+    >
+        Cancel
+    </a>
+
+</form>
+
+</body>
+</html>

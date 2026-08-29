@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>All Reports</title>
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/style.css}"
+    >
+</head>
+
+<body>
+
+<header>
+    <h1>All Reports</h1>
+
+    <a th:href="@{/}">
+        Create a new report
+    </a>
+</header>
+
+<main>
+
+    <p th:if="${#lists.isEmpty(reports)}">
+        No reports have been created yet.
+    </p>
+
+    <table th:unless="${#lists.isEmpty(reports)}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Report code</th>
+            <th>Test type</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="report : ${reports}">
+
+            <td th:text="${report.id}">
+                1
+            </td>
+
+            <td th:text="${report.code}">
+                REPORT-123
+            </td>
+
+            <td th:text="${report.testType.name}">
+                Test type
+            </td>
+
+            <td th:text="${report.date}">
+                2026-08-18
+            </td>
+
+            <td>
+                <a
+                        th:href="@{/reports/{reportId}(reportId=${report.id})}"
+                >
+                    Show
+                </a>
+
+                <a
+                        th:href="@{/reports/{reportId}/edit(reportId=${report.id})}"
+                >
+                    Edit
+                </a>
+
+                <form
+                        th:action="@{/reports/{reportId}/delete(reportId=${report.id})}"
+                        method="post"
+                        style="display: inline"
+                        onsubmit="return confirm(
+                            'Are you sure you want to delete this report?'
+                        )"
+                >
+                    <button type="submit">
+                        Delete
+                    </button>
+                </form>
+            </td>
+
+        </tr>
+        </tbody>
+    </table>
+
+</main>
+
+</body>
+</html>

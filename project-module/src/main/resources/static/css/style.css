@@ -6,3 +6,59 @@ body {
 h1 {
     color: darkblue;
 }
+
+.marker-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.marker-row label {
+    min-width: 240px;
+}
+
+.report {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 2px solid #cccccc;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 900px;
+}
+
+th,
+td {
+    padding: 10px;
+    border: 1px solid #cccccc;
+    text-align: left;
+}
+
+.status-normal {
+    color: green;
+    font-weight: bold;
+}
+
+.status-low,
+.status-high,
+.status-abnormal {
+    color: red;
+    font-weight: bold;
+}
+
+.influence {
+    max-width: 900px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background-color: #fff3cd;
+    border-left: 4px solid #e0a800;
+}
+
+.interpretation {
+    max-width: 900px;
+    white-space: pre-wrap;
+    line-height: 1.5;
+}

@@ -1,16 +1,284 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
 <head>
+
     <meta charset="UTF-8">
+
     <title>Blood Work Report</title>
-    <link rel="stylesheet" href="/css/style.css">
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/style.css}"
+    >
+
 </head>
 
 <body>
 
 <h1>Blood Work Report</h1>
 
-<p>The Spring application is running.</p>
+
+<a th:href="@{/reports}">
+    Show all reports
+</a>
+
+
+<form
+        th:action="@{/}"
+        method="get"
+>
+
+    <label for="testTypeSelect">
+        Choose a test type:
+    </label>
+
+    <select
+            id="testTypeSelect"
+            name="testTypeId"
+            required
+            onchange="this.form.submit()"
+    >
+
+        <option value="">
+            -- Select a test type --
+        </option>
+
+        <option
+                th:each="testType : ${testTypes}"
+                th:value="${testType.id}"
+                th:text="${testType.name}"
+                th:selected="${selectedTestType != null
+                    && selectedTestType.id == testType.id}"
+        >
+        </option>
+
+    </select>
+
+    <button type="submit">Load test type</button>
+
+</form>
+<form
+        th:if="${selectedTestType != null}"
+        th:action="@{/reports}"
+        method="post"
+>
+    <!-- Identifies the selected test panel -->
+    <input
+            type="hidden"
+            name="testTypeId"
+            th:value="${selectedTestType.id}"
+    >
+
+    <h2 th:text="${selectedTestType.name}">
+        Test name
+    </h2>
+
+    <h3>Enter marker values</h3>
+
+    <div
+            class="marker-row"
+            th:each="marker, row : ${selectedTestType.markers}"
+    >
+        <!-- Connects this value with its marker -->
+        <input
+                type="hidden"
+                th:name="|results[${row.index}].markerId|"
+                th:value="${marker.id}"
+        >
+
+        <label
+                th:for="|marker-${marker.id}|"
+                th:text="${marker.name}">
+            Marker
+        </label>
+
+        <!-- Numeric marker -->
+        <input
+                th:if="${marker.resultType.name() == 'NUMERIC'}"
+                type="number"
+                step="any"
+                required
+                th:id="|marker-${marker.id}|"
+                th:name="|results[${row.index}].value|"
+        >
+
+        <!-- Qualitative marker -->
+        <select
+                th:if="${marker.resultType.name() == 'QUALITATIVE'}"
+                required
+                th:id="|marker-${marker.id}|"
+                th:name="|results[${row.index}].value|"
+        >
+            <option value="">Select a value</option>
+            <option value="NEGATIVE">Negative</option>
+            <option value="POSITIVE">Positive</option>
+            <option value="TRACE">Trace</option>
+        </select>
+
+        <!-- Mixed marker -->
+        <input
+                th:if="${marker.resultType.name() == 'MIXED'}"
+                type="text"
+                required
+                placeholder="Negative, positive, trace, or number"
+                th:id="|marker-${marker.id}|"
+                th:name="|results[${row.index}].value|"
+                th:list="|mixed-values-${marker.id}|"
+        >
+
+        <datalist
+                th:if="${marker.resultType.name() == 'MIXED'}"
+                th:id="|mixed-values-${marker.id}|"
+        >
+            <option value="NEGATIVE"></option>
+            <option value="POSITIVE"></option>
+            <option value="TRACE"></option>
+        </datalist>
+
+        <!-- Unit -->
+        <span
+                th:if="${marker.unit != null}"
+                th:text="${marker.unit}">
+            Unit
+        </span>
+
+        <!-- Reference with minimum and maximum -->
+        <span
+                th:if="${marker.normalMin != null
+                    and marker.normalMax != null}"
+                th:text="|Reference: ${marker.normalMin} - ${marker.normalMax} ${marker.unit != null ? marker.unit : ''}|">
+        </span>
+
+        <!-- Minimum-only reference -->
+        <span
+                th:if="${marker.normalMin != null
+                    and marker.normalMax == null}"
+                th:text="|Reference: ≥ ${marker.normalMin} ${marker.unit != null ? marker.unit : ''}|">
+        </span>
+
+        <!-- Maximum-only reference -->
+        <span
+                th:if="${marker.normalMin == null
+                    and marker.normalMax != null}"
+                th:text="|Reference: ≤ ${marker.normalMax} ${marker.unit != null ? marker.unit : ''}|">
+        </span>
+
+        <!-- Qualitative reference -->
+        <span
+                th:if="${marker.resultType.name() == 'QUALITATIVE'}"
+                th:text="|Reference: ${marker.normalQualitativeResult}|">
+        </span>
+
+        <!-- Additional valid value for mixed markers -->
+        <span
+                th:if="${marker.resultType.name() == 'MIXED'
+                    and marker.normalQualitativeResult != null}"
+                th:text="|or ${marker.normalQualitativeResult}|">
+        </span>
+    </div>
+
+    <button type="submit">Create report</button>
+
+</form>
+<section
+        class="report"
+        th:if="${report != null}"
+>
+    <h2>Lab Report</h2>
+
+    <p>
+        Report code:
+        <strong th:text="${report.code}"></strong>
+    </p>
+
+    <p>
+        Date:
+        <span th:text="${report.date}"></span>
+    </p>
+
+    <h3>Marker results</h3>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Marker</th>
+            <th>Value</th>
+            <th>Unit</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="result : ${report.results}">
+            <td th:text="${result.marker.name}"></td>
+
+            <td>
+                <span
+                        th:if="${result.numericValue != null}"
+                        th:text="${result.numericValue}">
+                </span>
+
+                <span
+                        th:if="${result.qualitativeValue != null}"
+                        th:text="${result.qualitativeValue}">
+                </span>
+            </td>
+
+            <td th:text="${result.marker.unit != null
+                    ? result.marker.unit
+                    : ''}">
+            </td>
+
+            <td
+                    th:text="${result.status}"
+                    th:classappend="${'status-'
+                        + #strings.toLowerCase(result.status.name())}">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="influences">
+        <h3>Possible influences on off-range markers</h3>
+
+        <div th:each="result : ${report.results}">
+            <div
+                    class="influence"
+                    th:if="${result.status.name() != 'NORMAL'
+                        and not #strings.isEmpty(
+                            result.marker.possibleInfluences
+                        )}"
+            >
+                <h4>
+                    <span th:text="${result.marker.name}"></span>
+                    —
+                    <span th:text="${result.status}"></span>
+                </h4>
+
+                <p th:text="${result.marker.possibleInfluences}">
+                </p>
+            </div>
+        </div>
+
+        <p th:if="${allResultsNormal}">
+            All submitted markers are within their configured references.
+        </p>
+    </div>
+
+    <div class="full-report">
+        <h3>Full interpretation</h3>
+
+        <div
+                class="interpretation"
+                th:text="${report.interpretation}">
+        </div>
+    </div>
+</section>
+
 
 </body>
+
 </html>

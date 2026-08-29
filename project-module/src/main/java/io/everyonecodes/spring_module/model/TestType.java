@@ -36,6 +36,7 @@ public class TestType {
             inverseJoinColumns = @JoinColumn(name = "marker_id")
     )
 
+    @OrderBy("name ASC")
     private Set<Marker> markers = new HashSet<>();
 
 }
