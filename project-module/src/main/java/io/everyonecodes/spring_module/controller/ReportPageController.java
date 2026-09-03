@@ -51,8 +51,7 @@ public class ReportPageController {
         UpdateReportForm form = new UpdateReportForm();
 
         for (MarkerResult result : report.getResults()) {
-            UpdateReportForm.MarkerInput input =
-                    new UpdateReportForm.MarkerInput();
+            UpdateReportForm.MarkerInput input = new UpdateReportForm.MarkerInput();
             input.setMarkerId(result.getMarker().getId());
 
             if (result.getNumericValue() != null) {
@@ -60,26 +59,24 @@ public class ReportPageController {
             } else {
                 input.setValue(result.getQualitativeValue().name());
             }
-
             form.getResults().add(input);
         }
-
         model.addAttribute("report", report);
         model.addAttribute("form", form);
         return "reports/edit";
     }
 
+
     @PostMapping("/{reportId}/edit")
     public String updateReport(
             @PathVariable Integer reportId,
             @ModelAttribute("form") UpdateReportForm form
-    ) {
+    ){
         Report report = reportService.findReportById(reportId);
         TestType testType = report.getTestType();
         Map<Integer, Marker> markersById = testType.getMarkers()
                 .stream()
                 .collect(Collectors.toMap(Marker::getId, Function.identity()));
-
         List<MarkerResultRequest> submittedResults = form.getResults()
                 .stream()
                 .map(input -> convertInput(input, markersById))
@@ -89,10 +86,12 @@ public class ReportPageController {
         return "redirect:/reports/" + reportId;
     }
 
+
     @PostMapping("/{reportId}/delete")
     public String deleteReport(@PathVariable Integer reportId) {
         reportService.deleteReport(reportId);
         return "redirect:/reports";
+
     }
 
     private MarkerResultRequest convertInput(
