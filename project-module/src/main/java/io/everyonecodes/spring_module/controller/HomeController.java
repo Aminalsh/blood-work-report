@@ -64,10 +64,20 @@ public class HomeController {
                 .stream()
                 .collect(Collectors.toMap(Marker::getId, Function.identity()));
 
-        List<MarkerResultRequest> submittedResults = form.getResults()
-                .stream()
-                .map(input -> convertInput(input, markersById))
-                .toList();
+        List<MarkerResultRequest> submittedResults;
+
+        try {
+            submittedResults = form.getResults()
+                    .stream()
+                    .map(input -> convertInput(input, markersById))
+                    .toList();
+        } catch (IllegalArgumentException exception) {
+            model.addAttribute("errorMessage", exception.getMessage());
+            model.addAttribute("testTypes", testTypeService.findAll());
+            model.addAttribute("selectedTestType", testType);
+
+            return "index";
+        }
 
         Report report = reportService.createReport(
                 form.getTestTypeId(),
