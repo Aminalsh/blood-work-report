@@ -1,6 +1,7 @@
 package io.everyonecodes.spring_module.service;
 
 import io.everyonecodes.spring_module.dto.MarkerResultRequest;
+import io.everyonecodes.spring_module.global_exception_handling.ResourceNotFoundException;
 import io.everyonecodes.spring_module.interpretations.KidneyReportInterpreter;
 import io.everyonecodes.spring_module.interpretations.LiverReportInterpreter;
 import io.everyonecodes.spring_module.model.Marker;
@@ -54,7 +55,6 @@ public class ReportService {
         if (testTypeId == null) {
             throw new IllegalArgumentException("Test type ID cannot be null");
         }
-
         TestType testType = testTypeService.findById(testTypeId);
         Map<Integer, MarkerResultRequest> resultsByMarkerId =
                 validateAndIndexResults(testType, submittedResults);
@@ -82,7 +82,7 @@ public class ReportService {
         }
 
         return reportRepository.findById(reportId)
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                         "Report not found with ID: " + reportId
                 ));
     }
