@@ -62,3 +62,43 @@ td {
     white-space: pre-wrap;
     line-height: 1.5;
 }
+.actions {
+    white-space: nowrap;
+}
+
+.action-button {
+    display: inline-block;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 2px 7px;
+
+    background-color: #efefef;
+    color: black;
+    border: 1px solid #767676;
+    border-radius: 2px;
+
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    line-height: normal;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.action-button:visited {
+    color: black;
+}
+
+.action-button:hover {
+    background-color: #e5e5e5;
+    border-color: #4f4f4f;
+}
+
+.action-button:active {
+    background-color: #d5d5d5;
+}
+
+.delete-form {
+    display: inline;
+    margin: 0;
+}
