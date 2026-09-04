@@ -56,9 +56,6 @@
         </option>
 
     </select>
-
-    <button type="submit">Load test type</button>
-
 </form>
 <form
         th:if="${selectedTestType != null}"
@@ -77,6 +74,14 @@
     </h2>
 
     <h3>Enter marker values</h3>
+
+    <p
+            class="form-error"
+            th:if="${errorMessage != null}"
+            th:text="${errorMessage}"
+    >
+        Invalid input
+    </p>
 
     <div
             class="marker-row"

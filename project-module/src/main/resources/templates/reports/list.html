@@ -20,6 +20,7 @@
     <a th:href="@{/}">
         Create a new report
     </a>
+
 </header>
 
 <main>
@@ -58,14 +59,14 @@
                 2026-08-18
             </td>
 
-            <td>
-                <a
+            <td class="actions">
+                <a  class="action-button show-button"
                         th:href="@{/reports/{reportId}(reportId=${report.id})}"
                 >
                     Show
                 </a>
 
-                <a
+                <a  class="action-button edit-button"
                         th:href="@{/reports/{reportId}/edit(reportId=${report.id})}"
                 >
                     Edit
