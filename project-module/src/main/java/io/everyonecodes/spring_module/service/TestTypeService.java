@@ -1,5 +1,6 @@
 package io.everyonecodes.spring_module.service;
 
+import io.everyonecodes.spring_module.global_exception_handling.ResourceNotFoundException;
 import io.everyonecodes.spring_module.model.Marker;
 import io.everyonecodes.spring_module.model.TestType;
 import io.everyonecodes.spring_module.repository.TestTypeRepository;
@@ -28,7 +29,7 @@ public class TestTypeService {
     public TestType findById(Integer id) {
         return testTypeRepository.findById(id)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
+                        new ResourceNotFoundException(
                                 "Test type not found with id: " + id
                         )
                 );
