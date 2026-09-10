@@ -1,4 +1,4 @@
-# Blood Work Report â€” Laboratory Report Generation System
+# Blood Work Report” Laboratory Report Generation System
 
 A full-stack laboratory report application built with Java 21 and Spring Boot. Users choose a test panel, enter numeric or qualitative marker values, and receive a saved report containing evaluated marker statuses and a rule-based interpretation.
 
