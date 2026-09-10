@@ -246,7 +246,7 @@ The example shows the request shape only. The actual marker IDs depend on the re
 
 ### Browser pages
 
-`/` Â· `/reports` Â· `/reports/{reportId}` Â· `/reports/{reportId}/edit`
+/reports | /reports/{reportId} | /reports/{reportId}/edit
 
 ---
 
@@ -254,13 +254,13 @@ The example shows the request shape only. The actual marker IDs depend on the re
 
 ```text
 project-module/src/main/java/io/everyonecodes/spring_module/
-â”œâ”€â”€ controller/                 HTTP and Thymeleaf controllers
-â”œâ”€â”€ dto/                        API and form request/response objects
-â”œâ”€â”€ global_exception_handling/  REST error responses and not-found errors
-â”œâ”€â”€ interpretations/            Kidney and liver interpretation algorithms
-â”œâ”€â”€ model/                      JPA entities and enums
-â”œâ”€â”€ repository/                 Spring Data JPA repositories
-â””â”€â”€ service/                    Report orchestration and marker evaluation
+controller/                 HTTP and Thymeleaf controllers
+dto/                        API and form request/response objects
+global_exception_handling/  REST error responses and not-found errors
+interpretations/            Kidney and liver interpretation algorithms
+model/                      JPA entities and enums
+repository/                 Spring Data JPA repositories
+service/                    Report orchestration and marker evaluation
 ```
 
 The browser templates are under [`src/main/resources/templates`](project-module/src/main/resources/templates), and the stylesheet is under [`src/main/resources/static/css/style.css`](project-module/src/main/resources/static/css/style.css).
@@ -280,6 +280,6 @@ The browser templates are under [`src/main/resources/templates`](project-module/
 
 ## Author
 
-**Amin Alsh** â€” Java backend developer
+Amin Alshikh Mohamad | Java backend developer
 
 - [GitHub repository](https://github.com/Aminalsh/blood-work-report)
